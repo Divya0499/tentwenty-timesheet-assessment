@@ -65,10 +65,10 @@ src/
       auth/[...nextauth]/   NextAuth route handler
       timesheets/           Internal API routes the client calls (see below)
   components/
-    ui/                     Generic, reusable pieces (Button, Modal, StatusBadge, FormField)
-    layout/                 Navbar
+    ui/                     Generic, reusable pieces (Button, Modal, StatusBadge, FormField, Pagination...)
+    layout/                 Navbar, Footer
     auth/                   LoginForm
-    timesheet/               WeeksTable, EntriesTable, TimesheetModal
+    timesheet/              WeeksTable, DaySection, TaskRow, WeekProgress, TimesheetModal
   lib/
     auth.ts                 NextAuth config + dummy credentials check
     db/timesheets.ts        In-memory "database" + CRUD functions
@@ -101,21 +101,32 @@ addition to `proxy.ts` protecting the `/dashboard` pages themselves.
   through a small set of functions in that one file, so swapping it for a
   real database or API later shouldn't require touching route handlers or
   UI components.
-- **Data model**: a "timesheet entry" is one day's logged work (date,
-  project, task, description, hours, status). The dashboard's Week #/Date/
-  Status/Actions table is *derived* from entries by grouping them into
-  ISO (Monday-start) weeks — weeks aren't stored separately, so there's
-  only one source of truth. A week's status is `Completed` once all 5
-  weekdays have at least one entry, `Incomplete` if some are logged, and
-  `Missing` if none are.
-- **Projects** are a fixed list (`src/lib/projects.ts`) rather than a
-  separate CRUD resource, since the brief didn't specify one.
+- **Data model**: a "timesheet entry" is one task logged against a specific
+  day (project, type of work, task description, hours). The dashboard's
+  Week #/Date/Status/Actions table is *derived* from entries by grouping
+  them into Monday-start weeks — weeks aren't stored separately, so
+  there's only one source of truth. A week's status is `Completed` once
+  all 5 weekdays (Mon-Fri) have at least one entry, `Incomplete` if some
+  are logged, and `Missing` if none are. The Actions column's label
+  (`View` / `Update` / `Create`) follows that same status.
+  "Week #" is a sequential counter over the weeks shown (oldest = 1), not
+  the calendar's ISO week-of-year number.
+- **Projects** and **types of work** are fixed lists (`src/lib/projects.ts`,
+  `src/lib/typesOfWork.ts`) rather than separate CRUD resources, since the
+  brief didn't specify either as one.
+- **Weekly hours target** is assumed to be 40 (used for the progress bar
+  on the week-detail page); not specified in the brief.
+- **Dashboard "Date Range" filter** is a preset picker (All time / Last 4
+  / 8 / 12 weeks) rather than a full calendar range-picker, to stay in
+  scope. "Status" filter and column sorting are fully functional client-side.
 - **Dummy auth**: a single hardcoded demo account, per the brief's "dummy
   authentication" instruction. Session is a JWT via NextAuth, not
-  persisted server-side.
-- **Design**: built from the brief's written requirements and table spec
-  (Week #, Date, Status, Actions) rather than a pixel-matched Figma
-  implementation.
+  persisted server-side. The login screen's "Remember me" checkbox is
+  visual only (not wired to session duration) — a real implementation
+  would vary the JWT's `maxAge` based on it.
+- **Design**: matched to the four Figma reference screens (login, weeks
+  table, week list view, add/edit modal). Exact spacing/typography may
+  differ slightly in places from a full Figma inspect pass.
 - **Testing**: Vitest + React Testing Library are installed and configured
   as the intended test stack, but no test suite was written given the
   submission window — noted here rather than left unexplained, per the
