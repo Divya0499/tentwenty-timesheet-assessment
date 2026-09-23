@@ -204,9 +204,12 @@ export function TimesheetModal({
               step={0.5}
               min={0.5}
               max={24}
+              // Deliberately not using `inputClasses` here — its `w-full`
+              // would stretch this to fill the row between the +/- buttons
+              // instead of staying a compact stepper field.
               className={clsx(
-                inputClasses,
-                "text-center",
+                "h-9 w-20 rounded-md border border-gray-300 text-center text-sm text-gray-900 shadow-sm",
+                "focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500",
                 errors.hours && inputErrorClasses
               )}
               {...register("hours")}
