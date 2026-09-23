@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import { HelpCircle, Minus, Plus } from "lucide-react";
@@ -57,7 +57,7 @@ export function TimesheetModal({
     register,
     handleSubmit,
     reset,
-    watch,
+    control,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<TimesheetFormInput, unknown, TimesheetFormValues>({
@@ -81,7 +81,7 @@ export function TimesheetModal({
     );
   }, [isOpen, entry, defaultDate, reset]);
 
-  const hours = watch("hours");
+  const hours = useWatch({ control, name: "hours" });
 
   function adjustHours(delta: number) {
     const current = Number(hours) || 0;

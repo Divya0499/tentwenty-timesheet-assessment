@@ -127,10 +127,9 @@ addition to `proxy.ts` protecting the `/dashboard` pages themselves.
 - **Design**: matched to the four Figma reference screens (login, weeks
   table, week list view, add/edit modal). Exact spacing/typography may
   differ slightly in places from a full Figma inspect pass.
-- **Testing**: Vitest + React Testing Library are installed and configured
-  as the intended test stack, but no test suite was written given the
-  submission window — noted here rather than left unexplained, per the
-  brief's "Testing (Optional)" scoring.
+- **Testing**: no automated test suite is included, given the submission
+  window — noted here rather than left unexplained, per the brief's
+  "Testing (Optional)" scoring.
 
 ## Time spent
 
