@@ -4,7 +4,8 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { authOptions } from "@/lib/auth";
 import { Navbar } from "@/components/layout/Navbar";
-import { formatWeekRange, getWeekEnd, toIsoDate } from "@/lib/weeks";
+import { Footer } from "@/components/layout/Footer";
+import { getWeekEnd, toIsoDate } from "@/lib/weeks";
 import { WeekDetailClient } from "./WeekDetailClient";
 
 interface WeekPageProps {
@@ -26,9 +27,9 @@ export default async function WeekDetailPage({ params }: WeekPageProps) {
   const weekEnd = toIsoDate(getWeekEnd(parsedDate));
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="flex min-h-screen flex-col bg-gray-50">
       <Navbar />
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
         <Link
           href="/dashboard"
           className="mb-4 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
@@ -37,15 +38,9 @@ export default async function WeekDetailPage({ params }: WeekPageProps) {
           Back to all weeks
         </Link>
 
-        <h1 className="mb-1 text-xl font-semibold text-gray-900">
-          Week of {formatWeekRange(weekStart, weekEnd)}
-        </h1>
-        <p className="mb-6 text-sm text-gray-500">
-          Log and manage the entries you worked this week.
-        </p>
-
         <WeekDetailClient weekStart={weekStart} weekEnd={weekEnd} />
       </main>
+      <Footer />
     </div>
   );
 }

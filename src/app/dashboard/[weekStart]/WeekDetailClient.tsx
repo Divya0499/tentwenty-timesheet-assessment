@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { EntriesTable } from "@/components/timesheet/EntriesTable";
+import { useEffect, useMemo, useState } from "react";
+import { DaySection } from "@/components/timesheet/DaySection";
+import { WeekProgress } from "@/components/timesheet/WeekProgress";
 import { TimesheetModal } from "@/components/timesheet/TimesheetModal";
+import { formatWeekRange, getWorkdays, toIsoDate } from "@/lib/weeks";
 import {
   ApiError,
   createTimesheetEntry,
@@ -24,6 +24,7 @@ export function WeekDetailClient({ weekStart, weekEnd }: WeekDetailClientProps) 
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<TimesheetEntry | null>(null);
+  const [activeDate, setActiveDate] = useState(weekStart);
 
   function loadEntries() {
     fetchWeekEntries(weekStart)
@@ -38,13 +39,29 @@ export function WeekDetailClient({ weekStart, weekEnd }: WeekDetailClientProps) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [weekStart]);
 
-  function openAddModal() {
+  const workdays = useMemo(() => getWorkdays(new Date(weekStart)).map(toIsoDate), [weekStart]);
+
+  const entriesByDay = useMemo(() => {
+    const map = new Map<string, TimesheetEntry[]>();
+    for (const day of workdays) map.set(day, []);
+    for (const entry of entries ?? []) {
+      if (!map.has(entry.date)) map.set(entry.date, []);
+      map.get(entry.date)!.push(entry);
+    }
+    return map;
+  }, [entries, workdays]);
+
+  const totalHours = (entries ?? []).reduce((sum, e) => sum + e.hours, 0);
+
+  function openAddModal(date: string) {
     setEditingEntry(null);
+    setActiveDate(date);
     setIsModalOpen(true);
   }
 
   function openEditModal(entry: TimesheetEntry) {
     setEditingEntry(entry);
+    setActiveDate(entry.date);
     setIsModalOpen(true);
   }
 
@@ -59,7 +76,9 @@ export function WeekDetailClient({ weekStart, weekEnd }: WeekDetailClientProps) 
   }
 
   async function handleDelete(entry: TimesheetEntry) {
-    const confirmed = window.confirm(`Delete "${entry.task}"? This can't be undone.`);
+    const confirmed = window.confirm(
+      `Delete "${entry.description}"? This can't be undone.`
+    );
     if (!confirmed) return;
 
     try {
@@ -70,31 +89,46 @@ export function WeekDetailClient({ weekStart, weekEnd }: WeekDetailClientProps) 
     }
   }
 
+  if (error) {
+    return <p className="rounded-md bg-red-50 p-4 text-sm text-red-700">{error}</p>;
+  }
+
   return (
     <div>
-      <div className="mb-4 flex justify-end">
-        <Button onClick={openAddModal}>
-          <Plus size={16} />
-          Add Entry
-        </Button>
+      <div className="rounded-lg border border-gray-200 bg-white">
+        <div className="flex items-start justify-between gap-4 px-4 py-4">
+          <div>
+            <h2 className="text-base font-semibold text-gray-900">
+              This week&apos;s timesheet
+            </h2>
+            <p className="mt-0.5 text-xs text-gray-500">
+              {formatWeekRange(weekStart, weekEnd)}
+            </p>
+          </div>
+          <WeekProgress totalHours={totalHours} />
+        </div>
+
+        {!entries ? (
+          <p className="px-4 pb-6 text-sm text-gray-500">Loading entries…</p>
+        ) : (
+          workdays.map((day) => (
+            <DaySection
+              key={day}
+              date={day}
+              entries={entriesByDay.get(day) ?? []}
+              onAdd={openAddModal}
+              onEdit={openEditModal}
+              onDelete={handleDelete}
+            />
+          ))
+        )}
       </div>
-
-      {error && (
-        <p className="mb-4 rounded-md bg-red-50 p-4 text-sm text-red-700">{error}</p>
-      )}
-
-      {!entries ? (
-        <p className="text-sm text-gray-500">Loading entries…</p>
-      ) : (
-        <EntriesTable entries={entries} onEdit={openEditModal} onDelete={handleDelete} />
-      )}
 
       <TimesheetModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleSubmit}
-        weekStart={weekStart}
-        weekEnd={weekEnd}
+        defaultDate={activeDate}
         entry={editingEntry}
       />
     </div>
