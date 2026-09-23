@@ -58,26 +58,28 @@ export function DateRangeDropdown({ value, onChange }: DateRangeDropdownProps) {
       </button>
 
       {open && (
-        <div className="absolute left-0 z-10 mt-1 w-72 rounded-md border border-gray-200 bg-white p-4 shadow-lg">
+        <div className="absolute left-0 z-10 mt-1 w-[22rem] rounded-md border border-gray-200 bg-white p-4 shadow-lg">
           <div className="flex gap-3">
-            <label className="flex-1 text-xs font-medium text-gray-500">
+            <label className="min-w-0 flex-1 text-xs font-medium text-gray-500">
               From
+              {/* A native date input's calendar icon needs real room, or it
+                  gets squeezed against the field's edge in a 2-up layout. */}
               <input
                 type="date"
                 value={draft.from}
                 max={draft.to || undefined}
                 onChange={(e) => setDraft((d) => ({ ...d, from: e.target.value }))}
-                className={`${inputClasses} mt-1`}
+                className={`${inputClasses} mt-1 px-2`}
               />
             </label>
-            <label className="flex-1 text-xs font-medium text-gray-500">
+            <label className="min-w-0 flex-1 text-xs font-medium text-gray-500">
               To
               <input
                 type="date"
                 value={draft.to}
                 min={draft.from || undefined}
                 onChange={(e) => setDraft((d) => ({ ...d, to: e.target.value }))}
-                className={`${inputClasses} mt-1`}
+                className={`${inputClasses} mt-1 px-2`}
               />
             </label>
           </div>

@@ -30,10 +30,13 @@ interface TimesheetModalProps {
 function emptyValues(date: string): TimesheetFormInput {
   return {
     date,
-    project: PROJECTS[0],
+    // Left unset on purpose so the select shows the "Project Name"
+    // placeholder rather than defaulting to the first project — zod
+    // rejects "" via the PROJECTS enum check if it's never changed.
+    project: "" as TimesheetFormInput["project"],
     typeOfWork: TYPES_OF_WORK[0],
     description: "",
-    hours: 1,
+    hours: 12,
   };
 }
 
@@ -82,6 +85,7 @@ export function TimesheetModal({
   }, [isOpen, entry, defaultDate, reset]);
 
   const hours = useWatch({ control, name: "hours" });
+  const watchedProject = useWatch({ control, name: "project" });
 
   function adjustHours(delta: number) {
     const current = Number(hours) || 0;
@@ -101,7 +105,7 @@ export function TimesheetModal({
         <FormField
           label={
             <>
-              Select Project <LabelHint text="The project this task belongs to" />
+              Select Project * <LabelHint text="The project this task belongs to" />
             </>
           }
           htmlFor="project"
@@ -109,11 +113,18 @@ export function TimesheetModal({
         >
           <select
             id="project"
-            className={clsx(inputClasses, errors.project && inputErrorClasses)}
+            className={clsx(
+              inputClasses,
+              !watchedProject && "text-gray-400",
+              errors.project && inputErrorClasses
+            )}
             {...register("project")}
           >
+            <option value="" disabled>
+              Project Name
+            </option>
             {PROJECTS.map((project) => (
-              <option key={project} value={project}>
+              <option key={project} value={project} className="text-gray-900">
                 {project}
               </option>
             ))}
@@ -123,7 +134,7 @@ export function TimesheetModal({
         <FormField
           label={
             <>
-              Type of Work <LabelHint text="What kind of work this task involved" />
+              Type of Work * <LabelHint text="What kind of work this task involved" />
             </>
           }
           htmlFor="typeOfWork"
@@ -143,21 +154,21 @@ export function TimesheetModal({
         </FormField>
 
         <FormField
-          label="Task description"
+          label="Task description *"
           htmlFor="description"
           error={errors.description?.message}
         >
           <textarea
             id="description"
             rows={3}
-            placeholder="Write text here..."
+            placeholder="Write text here ..."
             className={clsx(inputClasses, errors.description && inputErrorClasses)}
             {...register("description")}
           />
           <p className="mt-1 text-xs text-gray-400">A note for extra info</p>
         </FormField>
 
-        <FormField label="Hours" htmlFor="hours" error={errors.hours?.message}>
+        <FormField label="Hours *" htmlFor="hours" error={errors.hours?.message}>
           <div className="flex items-center gap-2">
             <button
               type="button"
