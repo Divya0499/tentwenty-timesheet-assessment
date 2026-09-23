@@ -45,6 +45,3 @@ Password: password123
 - Tried to match the Figma screens as closely as I could.
 - Didn't get to writing tests given the time - testing was marked optional in the brief.
 
-## Time spent
-
-_(fill in before submitting)_
