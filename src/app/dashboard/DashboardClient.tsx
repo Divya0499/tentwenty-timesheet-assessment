@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { FilterSelect } from "@/components/ui/FilterSelect";
+import { FilterDropdown } from "@/components/ui/FilterDropdown";
 import { Pagination } from "@/components/ui/Pagination";
 import { WeeksTable, type SortDir, type SortKey } from "@/components/timesheet/WeeksTable";
 import { fetchWeeks, ApiError } from "@/lib/api/timesheets";
@@ -101,29 +102,29 @@ export function DashboardClient() {
   return (
     <div>
       <div className="mb-4 flex flex-wrap gap-3">
-        <FilterSelect
+        <FilterDropdown
           label="Date Range"
           value={dateRangeFilter}
-          onChange={(e) =>
-            updateFilter(setDateRangeFilter, e.target.value as DateRangeFilter)
-          }
-        >
-          <option value="all">All time</option>
-          <option value="4">Last 4 weeks</option>
-          <option value="8">Last 8 weeks</option>
-          <option value="12">Last 12 weeks</option>
-        </FilterSelect>
+          onChange={(v) => updateFilter(setDateRangeFilter, v)}
+          options={[
+            { value: "all", label: "All time" },
+            { value: "4", label: "Last 4 weeks" },
+            { value: "8", label: "Last 8 weeks" },
+            { value: "12", label: "Last 12 weeks" },
+          ]}
+        />
 
-        <FilterSelect
+        <FilterDropdown
           label="Status"
           value={statusFilter}
-          onChange={(e) => updateFilter(setStatusFilter, e.target.value as StatusFilter)}
-        >
-          <option value="ALL">All statuses</option>
-          <option value="COMPLETED">Completed</option>
-          <option value="INCOMPLETE">Incomplete</option>
-          <option value="MISSING">Missing</option>
-        </FilterSelect>
+          onChange={(v) => updateFilter(setStatusFilter, v)}
+          options={[
+            { value: "ALL", label: "All statuses" },
+            { value: "COMPLETED", label: "Completed" },
+            { value: "INCOMPLETE", label: "Incomplete" },
+            { value: "MISSING", label: "Missing" },
+          ]}
+        />
       </div>
 
       <WeeksTable
