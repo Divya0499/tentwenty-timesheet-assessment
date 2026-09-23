@@ -15,8 +15,8 @@ export async function GET() {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  // 12 weeks gives the dashboard's "Last N weeks" date-range filter enough
-  // history to be meaningful.
-  const weeks = summarizeWeeks(listTimesheets(), 12);
+  // A full year gives the dashboard's Date Range picker enough history to
+  // actually be useful.
+  const weeks = summarizeWeeks(listTimesheets(), 52);
   return NextResponse.json(weeks);
 }

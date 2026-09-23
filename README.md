@@ -40,7 +40,7 @@ Password: password123
 - A timesheet entry is one task on a specific day - project, type of work, description, hours. The dashboard table (Week #, Date, Status, Actions) is calculated from these entries grouped by week, not stored separately. A week counts as Completed once all 5 weekdays have an entry, Incomplete if only some do, Missing if none do.
 - Projects and "type of work" are just fixed dropdown lists since there was no API for these.
 - Assumed 40 hrs/week as the target for the progress bar on the week page, wasn't specified anywhere.
-- The Date Range filter on the dashboard is a simple preset (last 4/8/12 weeks) instead of a full calendar picker to keep it simple.
+- The Date Range filter lets you pick a From/To date and filters weeks that overlap that range. The dashboard loads a year's worth of weeks so there's actually something to filter.
 - Login is dummy auth with one hardcoded account like the brief says. "Remember me" checkbox is just there visually, doesn't actually do anything yet.
 - Tried to match the Figma screens as closely as I could.
 - Didn't get to writing tests given the time - testing was marked optional in the brief.

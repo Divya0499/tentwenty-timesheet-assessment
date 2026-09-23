@@ -3,13 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { FilterSelect } from "@/components/ui/FilterSelect";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
+import { DateRangeDropdown, type DateRange } from "@/components/ui/DateRangeDropdown";
 import { Pagination } from "@/components/ui/Pagination";
 import { WeeksTable, type SortDir, type SortKey } from "@/components/timesheet/WeeksTable";
 import { fetchWeeks, ApiError } from "@/lib/api/timesheets";
 import type { WeekStatus, WeekSummary } from "@/types/timesheet";
 
 type StatusFilter = "ALL" | WeekStatus;
-type DateRangeFilter = "all" | "4" | "8" | "12";
 
 const PAGE_SIZE_OPTIONS = [5, 10, 20];
 
@@ -18,7 +18,7 @@ export function DashboardClient() {
   const [error, setError] = useState<string | null>(null);
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
-  const [dateRangeFilter, setDateRangeFilter] = useState<DateRangeFilter>("all");
+  const [dateRange, setDateRange] = useState<DateRange>({ from: "", to: "" });
   const [sortKey, setSortKey] = useState<SortKey>("weekNumber");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [page, setPage] = useState(1);
@@ -47,10 +47,13 @@ export function DashboardClient() {
 
     let result = weeks;
 
-    if (dateRangeFilter !== "all") {
-      const n = Number(dateRangeFilter);
-      const maxWeekNumber = Math.max(...weeks.map((w) => w.weekNumber));
-      result = result.filter((w) => w.weekNumber > maxWeekNumber - n);
+    // A week matches if it overlaps the selected [from, to] range at all,
+    // not just if it falls entirely inside it.
+    if (dateRange.from) {
+      result = result.filter((w) => w.weekEnd >= dateRange.from);
+    }
+    if (dateRange.to) {
+      result = result.filter((w) => w.weekStart <= dateRange.to);
     }
 
     if (statusFilter !== "ALL") {
@@ -68,7 +71,7 @@ export function DashboardClient() {
     });
 
     return sorted;
-  }, [weeks, statusFilter, dateRangeFilter, sortKey, sortDir]);
+  }, [weeks, statusFilter, dateRange, sortKey, sortDir]);
 
   const totalPages = Math.max(1, Math.ceil(filteredSorted.length / pageSize));
   const currentPage = Math.min(page, totalPages);
@@ -102,16 +105,9 @@ export function DashboardClient() {
   return (
     <div>
       <div className="mb-4 flex flex-wrap gap-3">
-        <FilterDropdown
-          label="Date Range"
-          value={dateRangeFilter}
-          onChange={(v) => updateFilter(setDateRangeFilter, v)}
-          options={[
-            { value: "all", label: "All time" },
-            { value: "4", label: "Last 4 weeks" },
-            { value: "8", label: "Last 8 weeks" },
-            { value: "12", label: "Last 12 weeks" },
-          ]}
+        <DateRangeDropdown
+          value={dateRange}
+          onChange={(range) => updateFilter(setDateRange, range)}
         />
 
         <FilterDropdown
