@@ -15,11 +15,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
 
   return (
     <nav className="flex items-center gap-1" aria-label="Pagination">
-      <PageButton
-        variant="nav"
-        disabled={currentPage === 1}
-        onClick={() => onPageChange(currentPage - 1)}
-      >
+      <PageButton disabled={currentPage === 1} onClick={() => onPageChange(currentPage - 1)}>
         Previous
       </PageButton>
 
@@ -31,7 +27,6 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
         ) : (
           <PageButton
             key={page}
-            variant="number"
             active={page === currentPage}
             onClick={() => onPageChange(page)}
           >
@@ -41,7 +36,6 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
       )}
 
       <PageButton
-        variant="nav"
         disabled={currentPage === totalPages}
         onClick={() => onPageChange(currentPage + 1)}
       >
@@ -53,13 +47,11 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
 
 function PageButton({
   children,
-  variant,
   active,
   disabled,
   onClick,
 }: {
   children: ReactNode;
-  variant: "nav" | "number";
   active?: boolean;
   disabled?: boolean;
   onClick: () => void;
@@ -70,11 +62,10 @@ function PageButton({
       disabled={disabled}
       onClick={onClick}
       className={clsx(
-        "rounded-md px-2 py-1 text-sm",
-        disabled && "cursor-not-allowed text-gray-300",
-        !disabled && variant === "nav" && "text-gray-400 hover:text-gray-600",
-        !disabled && variant === "number" && !active && "text-gray-700 hover:bg-gray-100",
-        !disabled && variant === "number" && active && "font-semibold text-blue-600"
+        "rounded-md border px-3 py-1.5 text-sm",
+        disabled && "cursor-not-allowed border-gray-200 text-gray-300",
+        !disabled && !active && "border-gray-300 bg-white text-gray-700 hover:bg-gray-50",
+        !disabled && active && "border-blue-200 bg-blue-50 font-medium text-blue-600"
       )}
     >
       {children}
