@@ -38,12 +38,19 @@ export function WeeksTable({ weeks, sortKey, sortDir, onSortChange }: WeeksTable
   }
 
   return (
+    // min-w-full alone won't force a table wider than the viewport, so on
+    // narrow screens the browser squeezes columns instead of scrolling.
+    // A real min-width makes overflow-x-auto actually kick in.
     <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-      <table className="min-w-full divide-y divide-gray-200 text-left text-sm">
+      <table className="w-full min-w-[560px] divide-y divide-gray-200 text-left text-sm">
         <thead className="bg-gray-50">
           <tr>
             {COLUMNS.map((column) => (
-              <th key={column.key} scope="col" className="px-4 py-3 font-medium text-gray-500">
+              <th
+                key={column.key}
+                scope="col"
+                className="whitespace-nowrap px-4 py-3 font-medium text-gray-500"
+              >
                 <button
                   type="button"
                   onClick={() => onSortChange(column.key)}
@@ -55,7 +62,10 @@ export function WeeksTable({ weeks, sortKey, sortDir, onSortChange }: WeeksTable
                 </button>
               </th>
             ))}
-            <th scope="col" className="px-4 py-3 text-right font-medium uppercase tracking-wide text-gray-500">
+            <th
+              scope="col"
+              className="whitespace-nowrap px-4 py-3 text-right font-medium uppercase tracking-wide text-gray-500"
+            >
               Actions
             </th>
           </tr>
@@ -63,14 +73,16 @@ export function WeeksTable({ weeks, sortKey, sortDir, onSortChange }: WeeksTable
         <tbody className="divide-y divide-gray-100">
           {weeks.map((week) => (
             <tr key={week.weekStart} className="hover:bg-gray-50">
-              <td className="px-4 py-3 font-medium text-gray-900">{week.weekNumber}</td>
-              <td className="px-4 py-3 text-gray-600">
+              <td className="whitespace-nowrap px-4 py-3 font-medium text-gray-900">
+                {week.weekNumber}
+              </td>
+              <td className="whitespace-nowrap px-4 py-3 text-gray-600">
                 {formatWeekRange(week.weekStart, week.weekEnd)}
               </td>
-              <td className="px-4 py-3">
+              <td className="whitespace-nowrap px-4 py-3">
                 <StatusBadge status={week.status} />
               </td>
-              <td className={clsx("px-4 py-3 text-right")}>
+              <td className={clsx("whitespace-nowrap px-4 py-3 text-right")}>
                 <Link
                   href={`/dashboard/${week.weekStart}`}
                   className="font-medium text-blue-600 hover:text-blue-800"
