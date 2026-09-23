@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
-import { Minus, Plus } from "lucide-react";
+import { ChevronDown, Minus, Plus } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { FormField, inputClasses, inputErrorClasses } from "@/components/ui/FormField";
@@ -114,24 +114,31 @@ export function TimesheetModal({
           htmlFor="project"
           error={errors.project?.message}
         >
-          <select
-            id="project"
-            className={clsx(
-              inputClasses,
-              !watchedProject && "text-gray-400",
-              errors.project && inputErrorClasses
-            )}
-            {...register("project")}
-          >
-            <option value="" disabled>
-              Project Name
-            </option>
-            {PROJECTS.map((project) => (
-              <option key={project} value={project} className="text-gray-900">
-                {project}
+          <div className="relative">
+            <select
+              id="project"
+              className={clsx(
+                inputClasses,
+                "appearance-none pr-8",
+                !watchedProject && "text-gray-400",
+                errors.project && inputErrorClasses
+              )}
+              {...register("project")}
+            >
+              <option value="" disabled>
+                Project Name
               </option>
-            ))}
-          </select>
+              {PROJECTS.map((project) => (
+                <option key={project} value={project} className="text-gray-900">
+                  {project}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              size={14}
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
+          </div>
         </FormField>
 
         <FormField
@@ -143,17 +150,27 @@ export function TimesheetModal({
           htmlFor="typeOfWork"
           error={errors.typeOfWork?.message}
         >
-          <select
-            id="typeOfWork"
-            className={clsx(inputClasses, errors.typeOfWork && inputErrorClasses)}
-            {...register("typeOfWork")}
-          >
-            {TYPES_OF_WORK.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              id="typeOfWork"
+              className={clsx(
+                inputClasses,
+                "appearance-none pr-8",
+                errors.typeOfWork && inputErrorClasses
+              )}
+              {...register("typeOfWork")}
+            >
+              {TYPES_OF_WORK.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              size={14}
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
+          </div>
         </FormField>
 
         <FormField
