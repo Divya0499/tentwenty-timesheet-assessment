@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { PROJECTS } from "@/lib/projects";
+import { TYPES_OF_WORK } from "@/lib/typesOfWork";
 
 /**
  * Single source of truth for timesheet-entry validation. Used by:
@@ -15,21 +16,16 @@ export const timesheetSchema = z.object({
       message: "Enter a valid date",
     }),
   project: z.enum(PROJECTS, { error: "Select a project" }),
-  task: z
-    .string()
-    .trim()
-    .min(2, "Task must be at least 2 characters")
-    .max(80, "Task must be under 80 characters"),
+  typeOfWork: z.enum(TYPES_OF_WORK, { error: "Select a type of work" }),
   description: z
     .string()
     .trim()
-    .max(500, "Description must be under 500 characters")
-    .optional(),
+    .min(2, "Task description must be at least 2 characters")
+    .max(500, "Task description must be under 500 characters"),
   hours: z.coerce
     .number({ error: "Hours must be a number" })
     .min(0.5, "Minimum is 0.5 hours")
     .max(24, "Can't exceed 24 hours in a day"),
-  status: z.enum(["COMPLETED", "INCOMPLETE"], { error: "Select a status" }),
 });
 
 // react-hook-form needs both shapes: the raw values the <input> fields

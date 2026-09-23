@@ -34,10 +34,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     );
   }
 
-  const updated = updateTimesheet(entryId, {
-    ...parsed.data,
-    description: parsed.data.description ?? "",
-  });
+  const updated = updateTimesheet(entryId, parsed.data);
   if (!updated) {
     return NextResponse.json({ message: "Not found" }, { status: 404 });
   }

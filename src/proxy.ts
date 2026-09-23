@@ -1,4 +1,5 @@
 import { withAuth } from "next-auth/middleware";
+import type { NextRequestWithAuth } from "next-auth/middleware";
 import type { NextFetchEvent, NextRequest } from "next/server";
 
 // Next.js 16 renamed the middleware convention to "proxy" and requires a
@@ -8,7 +9,10 @@ import type { NextFetchEvent, NextRequest } from "next/server";
 // itself as its first argument). Any route under /dashboard requires a
 // signed-in session; unauthenticated visitors are redirected to /login.
 export function proxy(request: NextRequest, event: NextFetchEvent) {
-  return withAuth(request, event);
+  // withAuth's types expect its own NextRequestWithAuth wrapper (it adds
+  // `.nextauth` at runtime, which is why the plain NextRequest Next.js
+  // actually hands the proxy is safe to cast here).
+  return withAuth(request as NextRequestWithAuth, event);
 }
 
 export const config = {

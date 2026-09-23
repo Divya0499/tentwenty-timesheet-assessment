@@ -1,25 +1,24 @@
 /**
  * Domain types for the Timesheet Management app.
  *
- * Model: a "timesheet entry" is one day's logged work (project, task,
- * hours). The dashboard groups entries by ISO week to show the
- * Week # / Date range / Status / Actions table from the brief. Weeks
- * themselves aren't stored — they're derived from entries so there's
- * only one source of truth to keep in sync. See README "Assumptions".
+ * Model: a "timesheet entry" is one task logged against a specific day
+ * (project, type of work, description, hours). The dashboard groups
+ * entries by ISO week to show the Week # / Date range / Status / Actions
+ * table from the design. Weeks themselves aren't stored — they're
+ * derived from entries so there's only one source of truth. See README
+ * "Assumptions".
  */
 
 import type { Project } from "@/lib/projects";
-
-export type TimesheetStatus = "COMPLETED" | "INCOMPLETE";
+import type { TypeOfWork } from "@/lib/typesOfWork";
 
 export interface TimesheetEntry {
   id: string;
   date: string; // ISO date string, e.g. "2025-11-24"
   project: Project;
-  task: string;
-  description: string;
+  typeOfWork: TypeOfWork;
+  description: string; // the task's label, e.g. "Homepage Development"
   hours: number; // 0.5 - 24
-  status: TimesheetStatus;
   createdAt: string;
   updatedAt: string;
 }
@@ -28,10 +27,9 @@ export interface TimesheetEntry {
 export interface TimesheetInput {
   date: string;
   project: Project;
-  task: string;
+  typeOfWork: TypeOfWork;
   description: string;
   hours: number;
-  status: TimesheetStatus;
 }
 
 export type WeekStatus = "COMPLETED" | "INCOMPLETE" | "MISSING";
@@ -40,7 +38,7 @@ export type WeekStatus = "COMPLETED" | "INCOMPLETE" | "MISSING";
 export interface WeekSummary {
   weekStart: string; // ISO date (Monday), also used as the route param
   weekEnd: string; // ISO date (Sunday)
-  weekNumber: number; // ISO week-of-year
+  weekNumber: number; // sequential, 1-indexed from the oldest week shown
   status: WeekStatus;
   totalHours: number;
   entryCount: number;

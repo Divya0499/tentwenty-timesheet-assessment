@@ -34,6 +34,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     );
   }
 
-  const entry = createTimesheet({ ...parsed.data, description: parsed.data.description ?? "" });
+  const entry = createTimesheet(parsed.data);
   return NextResponse.json(entry, { status: 201 });
 }

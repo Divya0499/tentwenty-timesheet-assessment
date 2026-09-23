@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { addDays } from "date-fns";
 import type { TimesheetEntry, TimesheetInput } from "@/types/timesheet";
 import type { Project } from "@/lib/projects";
+import type { TypeOfWork } from "@/lib/typesOfWork";
 import { getWeekStart, toIsoDate } from "@/lib/weeks";
 
 /**
@@ -26,41 +27,41 @@ function seed(): TimesheetEntry[] {
 
   const raw: Array<Omit<TimesheetEntry, "id" | "createdAt" | "updatedAt">> = [
     // Two weeks ago: fully logged (Mon-Fri) -> COMPLETED
-    ...["Homepage layout", "Navbar + routing", "API integration", "Bug fixes", "Code review"].map(
-      (task, i) => ({
-        date: toIsoDate(addDays(twoWeeksAgoStart, i)),
-        project: "Client Website Revamp" as Project,
-        task,
-        description: `Worked on ${task.toLowerCase()}.`,
-        hours: 8,
-        status: "COMPLETED" as const,
-      })
-    ),
+    ...[
+      "Homepage layout",
+      "Navbar + routing",
+      "API integration",
+      "Bug fixes",
+      "Code review",
+    ].map((description, i) => ({
+      date: toIsoDate(addDays(twoWeeksAgoStart, i)),
+      project: "Client Website Revamp" as Project,
+      typeOfWork: "Feature Development" as TypeOfWork,
+      description,
+      hours: 8,
+    })),
     // Last week: only 2 days logged -> INCOMPLETE
     {
       date: toIsoDate(addDays(lastWeekStart, 0)),
       project: "Mobile App" as Project,
-      task: "Login screen",
-      description: "Implemented form validation and API hookup.",
+      typeOfWork: "Feature Development" as TypeOfWork,
+      description: "Login screen",
       hours: 6,
-      status: "COMPLETED",
     },
     {
       date: toIsoDate(addDays(lastWeekStart, 1)),
       project: "Mobile App" as Project,
-      task: "Onboarding flow",
-      description: "Built the 3-step onboarding carousel.",
+      typeOfWork: "Feature Development" as TypeOfWork,
+      description: "Onboarding flow",
       hours: 5,
-      status: "COMPLETED",
     },
     // This week: one entry so far -> INCOMPLETE
     {
       date: toIsoDate(thisWeekStart),
       project: "Internal Tools" as Project,
-      task: "Dashboard refactor",
-      description: "Started splitting the dashboard into smaller components.",
+      typeOfWork: "Bug fixes" as TypeOfWork,
+      description: "Dashboard refactor",
       hours: 4,
-      status: "INCOMPLETE",
     },
   ];
 
