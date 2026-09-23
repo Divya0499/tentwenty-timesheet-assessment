@@ -15,7 +15,7 @@ npm run dev
 
 The app runs at `http://localhost:3000`. There's no external API or database
 to configure — everything runs against an in-memory mock data layer (see
-"Assumptions" below).
+"Any assumptions or notes" below).
 
 Generate a secret for `.env.local`:
 
@@ -25,16 +25,14 @@ openssl rand -base64 32
 node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 ```
 
-### Demo login
-
-Authentication is a dummy Credentials provider (no real user database):
+Demo login (dummy auth, no real user database):
 
 ```
 Email:    employee@tentwenty.com
 Password: password123
 ```
 
-### Scripts
+Scripts:
 
 | Command | Description |
 |---|---|
@@ -43,7 +41,7 @@ Password: password123
 | `npm run start` | Run the production build |
 | `npm run lint` | Lint the project |
 
-## Frameworks & libraries
+## Frameworks/libraries used
 
 - **Next.js 16** (App Router) + **TypeScript**
 - **NextAuth v4** (Credentials provider) for auth, session stored as a JWT
@@ -52,7 +50,45 @@ Password: password123
 - **date-fns** for date/week arithmetic
 - **lucide-react** for icons
 
-## Project structure
+## Any assumptions or notes
+
+- **No real backend was supplied**, so `src/lib/db/timesheets.ts` is an
+  in-memory store standing in for one, seeded with a few weeks of sample
+  data. It resets whenever the dev server restarts. Every mutation goes
+  through a small set of functions in that one file, so swapping it for a
+  real database or API later shouldn't require touching route handlers or
+  UI components.
+- **Data model**: a "timesheet entry" is one task logged against a specific
+  day (project, type of work, task description, hours). The dashboard's
+  Week #/Date/Status/Actions table is *derived* from entries by grouping
+  them into Monday-start weeks — weeks aren't stored separately, so
+  there's only one source of truth. A week's status is `Completed` once
+  all 5 weekdays (Mon-Fri) have at least one entry, `Incomplete` if some
+  are logged, and `Missing` if none are. The Actions column's label
+  (`View` / `Update` / `Create`) follows that same status.
+  "Week #" is a sequential counter over the weeks shown (oldest = 1), not
+  the calendar's ISO week-of-year number.
+- **Projects** and **types of work** are fixed lists (`src/lib/projects.ts`,
+  `src/lib/typesOfWork.ts`) rather than separate CRUD resources, since the
+  brief didn't specify either as one.
+- **Weekly hours target** is assumed to be 40 (used for the progress bar
+  on the week-detail page); not specified in the brief.
+- **Dashboard "Date Range" filter** is a preset picker (All time / Last 4
+  / 8 / 12 weeks) rather than a full calendar range-picker, to stay in
+  scope. "Status" filter and column sorting are fully functional client-side.
+- **Dummy auth**: a single hardcoded demo account, per the brief's "dummy
+  authentication" instruction. Session is a JWT via NextAuth, not
+  persisted server-side. The login screen's "Remember me" checkbox is
+  visual only (not wired to session duration) — a real implementation
+  would vary the JWT's `maxAge` based on it.
+- **Design**: matched to the four Figma reference screens (login, weeks
+  table, week list view, add/edit modal). Exact spacing/typography may
+  differ slightly in places from a full Figma inspect pass.
+- **Testing**: no automated test suite is included, given the submission
+  window — noted here rather than left unexplained, per the brief's
+  "Testing (Optional)" scoring.
+
+### Project structure
 
 ```
 src/
@@ -92,44 +128,6 @@ calls to a data layer from components):
 
 Every route re-checks the session server-side (`getServerSession`), in
 addition to `proxy.ts` protecting the `/dashboard` pages themselves.
-
-## Assumptions & notes
-
-- **No real backend was supplied**, so `src/lib/db/timesheets.ts` is an
-  in-memory store standing in for one, seeded with a few weeks of sample
-  data. It resets whenever the dev server restarts. Every mutation goes
-  through a small set of functions in that one file, so swapping it for a
-  real database or API later shouldn't require touching route handlers or
-  UI components.
-- **Data model**: a "timesheet entry" is one task logged against a specific
-  day (project, type of work, task description, hours). The dashboard's
-  Week #/Date/Status/Actions table is *derived* from entries by grouping
-  them into Monday-start weeks — weeks aren't stored separately, so
-  there's only one source of truth. A week's status is `Completed` once
-  all 5 weekdays (Mon-Fri) have at least one entry, `Incomplete` if some
-  are logged, and `Missing` if none are. The Actions column's label
-  (`View` / `Update` / `Create`) follows that same status.
-  "Week #" is a sequential counter over the weeks shown (oldest = 1), not
-  the calendar's ISO week-of-year number.
-- **Projects** and **types of work** are fixed lists (`src/lib/projects.ts`,
-  `src/lib/typesOfWork.ts`) rather than separate CRUD resources, since the
-  brief didn't specify either as one.
-- **Weekly hours target** is assumed to be 40 (used for the progress bar
-  on the week-detail page); not specified in the brief.
-- **Dashboard "Date Range" filter** is a preset picker (All time / Last 4
-  / 8 / 12 weeks) rather than a full calendar range-picker, to stay in
-  scope. "Status" filter and column sorting are fully functional client-side.
-- **Dummy auth**: a single hardcoded demo account, per the brief's "dummy
-  authentication" instruction. Session is a JWT via NextAuth, not
-  persisted server-side. The login screen's "Remember me" checkbox is
-  visual only (not wired to session duration) — a real implementation
-  would vary the JWT's `maxAge` based on it.
-- **Design**: matched to the four Figma reference screens (login, weeks
-  table, week list view, add/edit modal). Exact spacing/typography may
-  differ slightly in places from a full Figma inspect pass.
-- **Testing**: no automated test suite is included, given the submission
-  window — noted here rather than left unexplained, per the brief's
-  "Testing (Optional)" scoring.
 
 ## Time spent
 
