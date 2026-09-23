@@ -25,6 +25,12 @@ Email: employee@tentwenty.com
 Password: password123
 ```
 
+Run the tests with:
+
+```bash
+npm run test
+```
+
 ## Frameworks/libraries used
 
 - Next.js (App Router) + TypeScript
@@ -33,6 +39,7 @@ Password: password123
 - react-hook-form + zod for the add/edit form and validation
 - date-fns for date stuff
 - lucide-react for icons
+- Vitest + React Testing Library for tests
 
 ## Any assumptions or notes
 
@@ -43,7 +50,7 @@ Password: password123
 - The Date Range filter lets you pick a From/To date and filters weeks that overlap that range. The dashboard loads a year's worth of weeks so there's actually something to filter.
 - Login is dummy auth with one hardcoded account like the brief says. "Remember me" checkbox is just there visually, doesn't actually do anything yet.
 - Tried to match the Figma screens as closely as I could.
-- Didn't get to writing tests given the time - testing was marked optional in the brief.
+- Added a small Vitest + React Testing Library suite (`npm run test`) covering the week-status logic, the validation schema, and two components - not full coverage, just enough to show the approach given testing was marked optional in the brief.
 
 ## Time spent
 
