@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
-import { HelpCircle, Minus, Plus } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { FormField, inputClasses, inputErrorClasses } from "@/components/ui/FormField";
@@ -40,11 +40,14 @@ function emptyValues(date: string): TimesheetFormInput {
   };
 }
 
-/** Small helper icon next to a label, mirroring the design's tooltip hint. */
+/** Filled "i" info bubble next to a label, matching the design's tooltip hint. */
 function LabelHint({ text }: { text: string }) {
   return (
-    <span title={text} className="inline-flex align-middle text-gray-400">
-      <HelpCircle size={13} />
+    <span
+      title={text}
+      className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-gray-400 align-middle text-[10px] font-semibold text-white"
+    >
+      i
     </span>
   );
 }
@@ -99,7 +102,7 @@ export function TimesheetModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={entry ? "Edit Entry" : "Add New Entry"}>
-      <form onSubmit={submit} className="space-y-4" noValidate>
+      <form onSubmit={submit} className="space-y-5" noValidate>
         <input type="hidden" {...register("date")} />
 
         <FormField
@@ -160,7 +163,7 @@ export function TimesheetModal({
         >
           <textarea
             id="description"
-            rows={3}
+            rows={7}
             placeholder="Write text here ..."
             className={clsx(inputClasses, errors.description && inputErrorClasses)}
             {...register("description")}
