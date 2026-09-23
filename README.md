@@ -45,3 +45,7 @@ Password: password123
 - Tried to match the Figma screens as closely as I could.
 - Didn't get to writing tests given the time - testing was marked optional in the brief.
 
+## Time spent
+
+Spread across about 1-2 days.
+
