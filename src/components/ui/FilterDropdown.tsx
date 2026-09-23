@@ -10,6 +10,8 @@ interface FilterDropdownProps<T extends string> {
   options: { value: T; label: string }[];
   value: T;
   onChange: (value: T) => void;
+  /** Highlights the whole button when a non-default filter is applied. */
+  isActive?: boolean;
 }
 
 /**
@@ -23,6 +25,7 @@ export function FilterDropdown<T extends string>({
   options,
   value,
   onChange,
+  isActive,
 }: FilterDropdownProps<T>) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -45,10 +48,15 @@ export function FilterDropdown<T extends string>({
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex items-center gap-2 rounded-md border border-gray-300 bg-white py-1.5 pl-3 pr-2.5 text-sm text-gray-700 hover:bg-gray-50"
+        className={clsx(
+          "flex items-center gap-2 rounded-md border py-1.5 pl-3 pr-2.5 text-sm",
+          isActive
+            ? "border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100"
+            : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+        )}
       >
         {label}
-        <ChevronDown size={14} className="text-gray-400" />
+        <ChevronDown size={14} className={isActive ? "text-blue-400" : "text-gray-400"} />
       </button>
 
       {open && (

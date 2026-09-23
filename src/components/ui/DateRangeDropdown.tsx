@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import clsx from "clsx";
 import { Button } from "@/components/ui/Button";
 import { inputClasses } from "@/components/ui/FormField";
 
@@ -50,11 +51,15 @@ export function DateRangeDropdown({ value, onChange }: DateRangeDropdownProps) {
         }}
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="flex items-center gap-2 rounded-md border border-gray-300 bg-white py-1.5 pl-3 pr-2.5 text-sm text-gray-700 hover:bg-gray-50"
+        className={clsx(
+          "flex items-center gap-2 rounded-md border py-1.5 pl-3 pr-2.5 text-sm",
+          isActive
+            ? "border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100"
+            : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+        )}
       >
         Date Range
-        {isActive && <span className="h-1.5 w-1.5 rounded-full bg-blue-600" />}
-        <ChevronDown size={14} className="text-gray-400" />
+        <ChevronDown size={14} className={isActive ? "text-blue-400" : "text-gray-400"} />
       </button>
 
       {open && (

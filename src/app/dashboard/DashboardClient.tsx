@@ -114,6 +114,7 @@ export function DashboardClient() {
           label="Status"
           value={statusFilter}
           onChange={(v) => updateFilter(setStatusFilter, v)}
+          isActive={statusFilter !== "ALL"}
           options={[
             { value: "ALL", label: "All statuses" },
             { value: "COMPLETED", label: "Completed" },
