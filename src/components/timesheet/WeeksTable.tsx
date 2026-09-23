@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import clsx from "clsx";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { formatWeekRange } from "@/lib/weeks";
@@ -54,11 +54,23 @@ export function WeeksTable({ weeks, sortKey, sortDir, onSortChange }: WeeksTable
                 <button
                   type="button"
                   onClick={() => onSortChange(column.key)}
-                  className="flex items-center gap-1 uppercase tracking-wide hover:text-gray-700"
+                  aria-sort={
+                    sortKey === column.key
+                      ? sortDir === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
+                  className={clsx(
+                    "flex items-center gap-1 uppercase tracking-wide hover:text-gray-700",
+                    sortKey === column.key && "text-gray-700"
+                  )}
                 >
                   {column.label}
-                  {sortKey === column.key &&
-                    (sortDir === "asc" ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
+                  <ChevronDown
+                    size={14}
+                    className={sortKey === column.key ? "text-gray-600" : "text-gray-400"}
+                  />
                 </button>
               </th>
             ))}

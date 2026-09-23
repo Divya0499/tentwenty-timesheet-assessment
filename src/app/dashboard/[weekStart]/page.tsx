@@ -39,8 +39,8 @@ export default async function WeekDetailPage({ params }: WeekPageProps) {
         </Link>
 
         <WeekDetailClient weekStart={weekStart} weekEnd={weekEnd} />
+        <Footer />
       </main>
-      <Footer />
     </div>
   );
 }

@@ -16,6 +16,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
   return (
     <nav className="flex items-center gap-1" aria-label="Pagination">
       <PageButton
+        variant="nav"
         disabled={currentPage === 1}
         onClick={() => onPageChange(currentPage - 1)}
       >
@@ -24,12 +25,13 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
 
       {pages.map((page, i) =>
         page === "..." ? (
-          <span key={`ellipsis-${i}`} className="px-2 text-sm text-gray-400">
+          <span key={`ellipsis-${i}`} className="px-1.5 text-sm text-gray-400">
             &hellip;
           </span>
         ) : (
           <PageButton
             key={page}
+            variant="number"
             active={page === currentPage}
             onClick={() => onPageChange(page)}
           >
@@ -39,6 +41,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
       )}
 
       <PageButton
+        variant="nav"
         disabled={currentPage === totalPages}
         onClick={() => onPageChange(currentPage + 1)}
       >
@@ -50,11 +53,13 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
 
 function PageButton({
   children,
+  variant,
   active,
   disabled,
   onClick,
 }: {
   children: ReactNode;
+  variant: "nav" | "number";
   active?: boolean;
   disabled?: boolean;
   onClick: () => void;
@@ -65,10 +70,11 @@ function PageButton({
       disabled={disabled}
       onClick={onClick}
       className={clsx(
-        "rounded-md px-2.5 py-1.5 text-sm font-medium",
-        active && "bg-blue-50 text-blue-600",
-        !active && !disabled && "text-gray-600 hover:bg-gray-100",
-        disabled && "cursor-not-allowed text-gray-300"
+        "rounded-md px-2 py-1 text-sm",
+        disabled && "cursor-not-allowed text-gray-300",
+        !disabled && variant === "nav" && "text-gray-400 hover:text-gray-600",
+        !disabled && variant === "number" && !active && "text-gray-700 hover:bg-gray-100",
+        !disabled && variant === "number" && active && "font-semibold text-blue-600"
       )}
     >
       {children}

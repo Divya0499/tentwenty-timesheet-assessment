@@ -15,7 +15,7 @@ export function WeekProgress({ totalHours }: { totalHours: number }) {
         <div
           className={clsx(
             "h-full rounded-full transition-all",
-            percent >= 100 ? "bg-green-500" : "bg-amber-400"
+            percent >= 100 ? "bg-green-500" : "bg-orange-500"
           )}
           style={{ width: `${barWidth}%` }}
         />

@@ -24,7 +24,6 @@ export function Navbar() {
   }, []);
 
   const name = session?.user?.name ?? "";
-  const initial = name.charAt(0).toUpperCase() || "U";
   const isTimesheets = pathname?.startsWith("/dashboard");
 
   return (
@@ -51,13 +50,9 @@ export function Navbar() {
           <button
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
-            className="flex items-center gap-2 rounded-md py-2 text-sm text-gray-700 hover:text-gray-900"
+            className="flex items-center gap-1.5 rounded-md py-2 text-sm text-gray-700 hover:text-gray-900"
           >
-            <span className="relative flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">
-              {initial}
-              <span className="absolute -right-0.5 -bottom-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-green-500" />
-            </span>
-            <span className="hidden sm:inline">{name}</span>
+            <span>{name}</span>
             <ChevronDown size={16} className="text-gray-400" />
           </button>
 
