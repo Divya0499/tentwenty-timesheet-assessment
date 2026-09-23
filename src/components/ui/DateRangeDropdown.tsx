@@ -58,12 +58,16 @@ export function DateRangeDropdown({ value, onChange }: DateRangeDropdownProps) {
       </button>
 
       {open && (
-        <div className="absolute left-0 z-10 mt-1 w-[22rem] rounded-md border border-gray-200 bg-white p-4 shadow-lg">
-          <div className="flex gap-3">
+        // Fixed at 22rem the panel ran off the right edge of narrow
+        // screens (it's anchored to a button that isn't flush against the
+        // viewport edge). w-72 on mobile is narrow enough to always fit;
+        // sm:w-[22rem] gives it more room once there's space to spare.
+        // Stacking From/To vertically on mobile avoids squeezing two
+        // native date inputs (with their calendar icons) into a tight row.
+        <div className="absolute left-0 z-10 mt-1 w-72 rounded-md border border-gray-200 bg-white p-4 shadow-lg sm:w-[22rem]">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <label className="min-w-0 flex-1 text-xs font-medium text-gray-500">
               From
-              {/* A native date input's calendar icon needs real room, or it
-                  gets squeezed against the field's edge in a 2-up layout. */}
               <input
                 type="date"
                 value={draft.from}
