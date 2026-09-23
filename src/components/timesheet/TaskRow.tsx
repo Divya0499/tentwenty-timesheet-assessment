@@ -26,7 +26,7 @@ export function TaskRow({ entry, onEdit, onDelete }: TaskRowProps) {
   }, [menuOpen]);
 
   return (
-    <div className="flex items-center gap-3 border-t border-gray-100 px-4 py-3 first:border-t-0">
+    <div className="flex items-center gap-3 rounded-md border border-gray-200 px-4 py-3">
       <span className="flex-1 truncate text-sm text-gray-800">{entry.description}</span>
       <span className="w-14 shrink-0 text-right text-sm text-gray-500">{entry.hours} hrs</span>
       <span className="hidden shrink-0 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 sm:inline-block">
