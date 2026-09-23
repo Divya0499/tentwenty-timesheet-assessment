@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
+import { HelpCircle, Minus, Plus } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { FormField, inputClasses, inputErrorClasses } from "@/components/ui/FormField";
@@ -13,46 +14,58 @@ import {
   type TimesheetFormValues,
 } from "@/lib/validations/timesheet";
 import { PROJECTS } from "@/lib/projects";
+import { TYPES_OF_WORK } from "@/lib/typesOfWork";
 import type { TimesheetEntry, TimesheetInput } from "@/types/timesheet";
 
 interface TimesheetModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (values: TimesheetInput) => Promise<void>;
-  weekStart: string;
-  weekEnd: string;
+  /** Date the "+ Add new task" row was clicked from, prefilled into the form. */
+  defaultDate: string;
   /** Entry being edited, or null when adding a new one. */
   entry: TimesheetEntry | null;
 }
 
-const EMPTY_VALUES: TimesheetFormInput = {
-  date: "",
-  project: PROJECTS[0],
-  task: "",
-  description: "",
-  hours: 1,
-  status: "INCOMPLETE",
-};
+function emptyValues(date: string): TimesheetFormInput {
+  return {
+    date,
+    project: PROJECTS[0],
+    typeOfWork: TYPES_OF_WORK[0],
+    description: "",
+    hours: 1,
+  };
+}
+
+/** Small helper icon next to a label, mirroring the design's tooltip hint. */
+function LabelHint({ text }: { text: string }) {
+  return (
+    <span title={text} className="inline-flex align-middle text-gray-400">
+      <HelpCircle size={13} />
+    </span>
+  );
+}
 
 export function TimesheetModal({
   isOpen,
   onClose,
   onSubmit,
-  weekStart,
-  weekEnd,
+  defaultDate,
   entry,
 }: TimesheetModalProps) {
   const {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<TimesheetFormInput, unknown, TimesheetFormValues>({
     resolver: zodResolver(timesheetSchema),
-    defaultValues: EMPTY_VALUES,
+    defaultValues: emptyValues(defaultDate),
   });
 
-  // Re-seed the form whenever the modal opens for a different entry.
+  // Re-seed the form whenever the modal opens for a different entry/date.
   useEffect(() => {
     if (!isOpen) return;
     reset(
@@ -60,34 +73,40 @@ export function TimesheetModal({
         ? {
             date: entry.date,
             project: entry.project,
-            task: entry.task,
+            typeOfWork: entry.typeOfWork,
             description: entry.description,
             hours: entry.hours,
-            status: entry.status,
           }
-        : { ...EMPTY_VALUES, date: weekStart }
+        : emptyValues(defaultDate)
     );
-  }, [isOpen, entry, weekStart, reset]);
+  }, [isOpen, entry, defaultDate, reset]);
+
+  const hours = watch("hours");
+
+  function adjustHours(delta: number) {
+    const current = Number(hours) || 0;
+    const next = Math.min(24, Math.max(0.5, current + delta));
+    setValue("hours", next, { shouldValidate: true });
+  }
 
   const submit = handleSubmit(async (values) => {
-    await onSubmit({ ...values, description: values.description ?? "" });
+    await onSubmit(values);
   });
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={entry ? "Edit Entry" : "Add Entry"}>
+    <Modal isOpen={isOpen} onClose={onClose} title={entry ? "Edit Entry" : "Add New Entry"}>
       <form onSubmit={submit} className="space-y-4" noValidate>
-        <FormField label="Date" htmlFor="date" error={errors.date?.message}>
-          <input
-            id="date"
-            type="date"
-            min={weekStart}
-            max={weekEnd}
-            className={clsx(inputClasses, errors.date && inputErrorClasses)}
-            {...register("date")}
-          />
-        </FormField>
+        <input type="hidden" {...register("date")} />
 
-        <FormField label="Project" htmlFor="project" error={errors.project?.message}>
+        <FormField
+          label={
+            <>
+              Select Project <LabelHint text="The project this task belongs to" />
+            </>
+          }
+          htmlFor="project"
+          error={errors.project?.message}
+        >
           <select
             id="project"
             className={clsx(inputClasses, errors.project && inputErrorClasses)}
@@ -101,61 +120,83 @@ export function TimesheetModal({
           </select>
         </FormField>
 
-        <FormField label="Task" htmlFor="task" error={errors.task?.message}>
-          <input
-            id="task"
-            type="text"
-            placeholder="e.g. Homepage layout"
-            className={clsx(inputClasses, errors.task && inputErrorClasses)}
-            {...register("task")}
-          />
+        <FormField
+          label={
+            <>
+              Type of Work <LabelHint text="What kind of work this task involved" />
+            </>
+          }
+          htmlFor="typeOfWork"
+          error={errors.typeOfWork?.message}
+        >
+          <select
+            id="typeOfWork"
+            className={clsx(inputClasses, errors.typeOfWork && inputErrorClasses)}
+            {...register("typeOfWork")}
+          >
+            {TYPES_OF_WORK.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
         </FormField>
 
         <FormField
-          label="Description (optional)"
+          label="Task description"
           htmlFor="description"
           error={errors.description?.message}
         >
           <textarea
             id="description"
             rows={3}
-            placeholder="Any extra notes about this entry"
+            placeholder="Write text here..."
             className={clsx(inputClasses, errors.description && inputErrorClasses)}
             {...register("description")}
           />
+          <p className="mt-1 text-xs text-gray-400">A note for extra info</p>
         </FormField>
 
-        <div className="grid grid-cols-2 gap-4">
-          <FormField label="Hours" htmlFor="hours" error={errors.hours?.message}>
+        <FormField label="Hours" htmlFor="hours" error={errors.hours?.message}>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => adjustHours(-0.5)}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50"
+              aria-label="Decrease hours"
+            >
+              <Minus size={14} />
+            </button>
             <input
               id="hours"
               type="number"
               step={0.5}
               min={0.5}
               max={24}
-              className={clsx(inputClasses, errors.hours && inputErrorClasses)}
+              className={clsx(
+                inputClasses,
+                "text-center",
+                errors.hours && inputErrorClasses
+              )}
               {...register("hours")}
             />
-          </FormField>
-
-          <FormField label="Status" htmlFor="status" error={errors.status?.message}>
-            <select
-              id="status"
-              className={clsx(inputClasses, errors.status && inputErrorClasses)}
-              {...register("status")}
+            <button
+              type="button"
+              onClick={() => adjustHours(0.5)}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50"
+              aria-label="Increase hours"
             >
-              <option value="COMPLETED">Completed</option>
-              <option value="INCOMPLETE">Incomplete</option>
-            </select>
-          </FormField>
-        </div>
+              <Plus size={14} />
+            </button>
+          </div>
+        </FormField>
 
-        <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
-          <Button type="button" variant="secondary" onClick={onClose}>
-            Cancel
-          </Button>
+        <div className="flex justify-start gap-3 border-t border-gray-100 pt-4">
           <Button type="submit" isLoading={isSubmitting}>
             {entry ? "Save changes" : "Add entry"}
+          </Button>
+          <Button type="button" variant="secondary" onClick={onClose}>
+            Cancel
           </Button>
         </div>
       </form>

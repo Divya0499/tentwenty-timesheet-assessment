@@ -48,7 +48,7 @@ export function LoginForm() {
           id="email"
           type="email"
           autoComplete="email"
-          placeholder="employee@tentwenty.com"
+          placeholder="name@example.com"
           className={clsx(inputClasses, errors.email && inputErrorClasses)}
           {...register("email")}
         />
@@ -59,11 +59,22 @@ export function LoginForm() {
           id="password"
           type="password"
           autoComplete="current-password"
-          placeholder="••••••••"
+          placeholder="••••••••••"
           className={clsx(inputClasses, errors.password && inputErrorClasses)}
           {...register("password")}
         />
       </FormField>
+
+      <div className="flex items-center gap-2">
+        <input
+          id="remember-me"
+          type="checkbox"
+          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        />
+        <label htmlFor="remember-me" className="text-sm text-gray-600">
+          Remember me
+        </label>
+      </div>
 
       {formError && (
         <p className="text-sm text-red-600" role="alert">
