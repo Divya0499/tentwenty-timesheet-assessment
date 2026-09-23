@@ -1,0 +1,39 @@
+import { z } from "zod";
+import { PROJECTS } from "@/lib/projects";
+
+/**
+ * Single source of truth for timesheet-entry validation. Used by:
+ *  - the Add/Edit modal form (react-hook-form + @hookform/resolvers/zod)
+ *  - the API routes, so invalid data can never reach the "database"
+ *    even if a request bypasses the UI.
+ */
+export const timesheetSchema = z.object({
+  date: z
+    .string()
+    .min(1, "Date is required")
+    .refine((val) => !Number.isNaN(new Date(val).getTime()), {
+      message: "Enter a valid date",
+    }),
+  project: z.enum(PROJECTS, { error: "Select a project" }),
+  task: z
+    .string()
+    .trim()
+    .min(2, "Task must be at least 2 characters")
+    .max(80, "Task must be under 80 characters"),
+  description: z
+    .string()
+    .trim()
+    .max(500, "Description must be under 500 characters")
+    .optional(),
+  hours: z.coerce
+    .number({ error: "Hours must be a number" })
+    .min(0.5, "Minimum is 0.5 hours")
+    .max(24, "Can't exceed 24 hours in a day"),
+  status: z.enum(["COMPLETED", "INCOMPLETE"], { error: "Select a status" }),
+});
+
+// react-hook-form needs both shapes: the raw values the <input> fields
+// produce (e.g. `hours` typed as the coercible `unknown` before parsing)
+// and the parsed/validated output the resolver hands to onSubmit.
+export type TimesheetFormInput = z.input<typeof timesheetSchema>;
+export type TimesheetFormValues = z.output<typeof timesheetSchema>;
