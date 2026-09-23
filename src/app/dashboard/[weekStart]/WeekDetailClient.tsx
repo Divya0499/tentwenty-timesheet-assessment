@@ -52,6 +52,7 @@ export function WeekDetailClient({ weekStart, weekEnd }: WeekDetailClientProps) 
   }, [entries, workdays]);
 
   const totalHours = (entries ?? []).reduce((sum, e) => sum + e.hours, 0);
+  const loggedWorkdays = workdays.filter((day) => (entriesByDay.get(day) ?? []).length > 0).length;
 
   function openAddModal(date: string) {
     setEditingEntry(null);
@@ -104,6 +105,13 @@ export function WeekDetailClient({ weekStart, weekEnd }: WeekDetailClientProps) 
             <p className="mt-0.5 text-xs text-gray-500">
               {formatWeekRange(weekStart, weekEnd)}
             </p>
+            {entries && (
+              <p className="mt-1 text-xs text-gray-400">
+                {loggedWorkdays >= workdays.length
+                  ? "All 5 weekdays logged — this week is marked Completed."
+                  : `${loggedWorkdays} of ${workdays.length} weekdays logged. Log all 5 (Mon–Fri) to mark this week Completed.`}
+              </p>
+            )}
           </div>
           <WeekProgress totalHours={totalHours} />
         </div>
